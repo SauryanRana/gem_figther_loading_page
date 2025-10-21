@@ -1,0 +1,357 @@
+/* ===== Sharp sci-fi HUD theme (clean + consolidated) ===== */
+:root{
+  --bg:#070B0E;
+  --panel:#141A1F;
+  --panel-2:#0F1419;
+  --primary:#22D3EE;
+  --primary-2:#1D9BF0;
+  --accent:#F2E94E;
+  --text:#D6DEE6;
+  --muted:#9AA4AF;
+  --error:#EF4444;
+  --success:#22C55E;
+  --radius-lg:8px;
+  --radius-sm:6px;
+  --shadow:0 10px 30px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.04);
+  --panel-lift: -100px;
+}
+
+*{ box-sizing:border-box }
+html,body{ height:100% }
+body{
+  margin:0; color:var(--text);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: var(--bg);
+  overflow-x:hidden;
+  line-height:1.4; /* slightly tighter */
+}
+
+/* ===== Background: starfield canvas + subtle sparkles ===== */
+#spaceCanvas{
+  position:fixed; inset:0; z-index:-1;
+  background:
+    radial-gradient(1200px 700px at 50% -10%, rgba(29,155,240,.08), transparent 60%),
+    var(--bg);
+}
+.spark{
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    radial-gradient(circle at 12% 30%, rgba(255,255,255,.08) 1px, transparent 1.2px),
+    radial-gradient(circle at 82% 22%, rgba(255,255,255,.05) 1px, transparent 1.2px),
+    radial-gradient(circle at 40% 80%, rgba(255,255,255,.06) 1px, transparent 1.2px);
+  background-size: 1200px 800px, 1000px 600px, 1400px 900px;
+  mix-blend-mode: screen;
+}
+
+/* ===== Top HUD ===== */
+.hud{
+  position:fixed; top:0; left:0; right:0; height:64px;
+  display:flex; align-items:center; justify-content:flex-end; gap:12px;
+  padding:0 16px;
+  background: linear-gradient(to bottom, rgba(20,26,31,.7), rgba(20,26,31,.25));
+  border-bottom:1px solid rgba(255,255,255,.08);
+  backdrop-filter: blur(10px);
+  z-index:10;
+}
+.hud-actions{ display:flex; align-items:center; gap:12px }
+
+/* Icon button (settings, etc.) */
+.icon-btn{
+  background:transparent; border:1px solid rgba(255,255,255,.08);
+  color:var(--text); height:40px; width:40px; border-radius:10px;
+  display:grid; place-items:center; cursor:pointer;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease, outline-color .12s ease, border-color .12s ease;
+}
+.icon-btn:focus{ outline:2px solid var(--primary) }
+
+/* ===== Buttons ===== */
+.btn{
+  --h:44px;
+  height:var(--h); padding:0 18px; border-radius:var(--radius-sm);
+  border:1px solid var(--primary);
+  background: linear-gradient(to bottom, rgba(34,211,238,.18), rgba(34,211,238,.06));
+  color:var(--text); font-weight:600; letter-spacing:.2px; cursor:pointer;
+  box-shadow: var(--shadow);
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease, outline-color .12s ease, border-color .12s ease;
+  /* FIX: icon + text perfectly aligned */
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  line-height:1; /* avoid vertical misalignment */
+}
+.btn svg{ display:block; flex:0 0 auto }
+.btn-ghost{ background:transparent; border-color:rgba(255,255,255,.16) }
+.btn-primary{ background:linear-gradient(to bottom, rgba(34,211,238,.30), rgba(34,211,238,.10)) }
+.small{ height:38px; font-size:14px }
+.mr-6{ margin-right:6px } /* still fine if used */
+
+/* Hover glow for ALL buttons */
+.btn:hover, .icon-btn:hover{
+  transform: translateY(-1px);
+  box-shadow:
+    0 0 0 2px rgba(34,211,238,.25),
+    0 8px 24px rgba(34,211,238,.25),
+    var(--shadow);
+}
+.btn:active, .icon-btn:active{ transform: translateY(0) }
+.btn:focus{ outline:2px solid var(--primary) }
+
+/* ===== Layout: centered main with translucent panel ===== */
+.menu{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  padding: 132px 16px 48px; /* clears HUD */
+}
+
+.panel{
+  width: min(660px, calc(100% - 40px));        /* narrower card */
+  margin: 0 auto;
+  padding: clamp(22px, 4.5vh, 36px) 28px;      /* more vertical padding */
+  min-height: clamp(420px, 46vh, 560px); 
+  margin-top: var(--panel-lift);      /* taller card */
+  background:
+    linear-gradient(to bottom, rgba(20,26,31,.38), rgba(14,20,25,.26)); /* transparent */
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 14px;
+  box-shadow:
+    0 8px 28px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.05);
+  backdrop-filter: blur(6px);
+}
+
+/* ===== Hero ===== */
+.hero{
+  display:flex; flex-direction:column; align-items:center;
+  gap:16px; /* spacing between logo and title */
+}
+
+/* Logo: softer glow + smooth pulse + gentle float */
+.hero-logo{
+  width: min(560px, 48vw); /* decreased overall size */
+  /* Softer baseline glow */
+  filter:
+    drop-shadow(0 0 16px rgba(34,211,238,.40))
+    drop-shadow(0 0 28px rgba(29,155,240,.20));
+  animation:
+    floaty 6s ease-in-out infinite,
+    glowPulse 4.8s ease-in-out infinite;
+  margin-bottom: 6px;
+}
+
+@keyframes floaty{
+  0%{ transform: translateY(0) }
+  50%{ transform: translateY(-6px) }
+  100%{ transform: translateY(0) }
+}
+
+/* big -> small -> big, no snapping to 0; also softer at midpoint */
+@keyframes glowPulse{
+  0%,100%{
+    filter:
+      drop-shadow(0 0 16px rgba(34,211,238,.40))
+      drop-shadow(0 0 28px rgba(29,155,240,.20));
+  }
+  50%{
+    filter:
+      drop-shadow(0 0 8px rgba(34,211,238,.22))
+      drop-shadow(0 0 14px rgba(29,155,240,.10));
+  }
+}
+
+/* Title: smaller “Ready, Pilot?” */
+.display,
+.menu .display{
+  font-family: Orbitron, Inter, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 800;
+  font-size: clamp(28px, 5vw, 44px);
+  margin: 6px 0 12px;
+  text-shadow: 0 8px 40px rgba(0,0,0,.6);
+}
+
+.lede{ max-width:760px; margin: 8px auto 16px; color:var(--muted) }
+.actions{ display:flex; gap:14px; justify-content:center; margin-top: 26px }
+
+/* Hide version text entirely (if present) */
+.version{ display:none }
+
+/* ===== Modals ===== */
+.modal-scrim{
+  position:fixed; inset:0; background:rgba(0,0,0,.6);
+  display:grid; place-items:center; padding:24px; z-index:20;
+}
+.modal{
+  width:100%; max-width:560px;
+  background:linear-gradient(to bottom, var(--panel), var(--panel-2));
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+.modal header{
+  padding:18px 18px 6px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.modal h2{
+  margin:0;
+  font-family: Orbitron, Inter, sans-serif;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  color:var(--accent);
+  font-size:18px;
+}
+.modal .body{ padding:16px 18px 8px }
+.modal .footer{ padding:12px 18px 18px; display:flex; gap:10px; justify-content:flex-end; align-items:center }
+
+/* Inputs */
+fieldset{ border:0; padding:0; margin:0 }
+.label{ display:block; font-size:13px; color:var(--muted); margin-bottom:6px }
+.input{
+  width:100%; height:42px; border-radius: var(--radius-sm);
+  border:1px solid rgba(255,255,255,.1); background:#0E1419; color:var(--text); padding:0 12px;
+}
+.help{ font-size:12px; color:var(--muted); margin-top:6px }
+.row{ display:grid; gap:12px; grid-template-columns: 1fr }
+.checkbox{ display:flex; gap:8px; align-items:flex-start; margin-top:8px }
+.error{ color:var(--error); font-size:12px; margin-top:6px }
+.strength{
+  height:6px; background:rgba(255,255,255,.08);
+  border-radius:6px; overflow:hidden; margin-top:8px; display:flex; gap:2px;
+}
+.strength div{ flex:1; background:rgba(255,255,255,.12) }
+.strength .on{ background: linear-gradient(to right, #F43F5E, #F59E0B, #22C55E) }
+
+/* ===== Links (e.g., "Forgot password?") ===== */
+.link{
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: var(--primary-2);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: 600;
+  border-radius: 4px;
+  box-shadow: none;
+  cursor: pointer;
+}
+.link:hover{
+  color: #5CB5FF;
+  text-decoration-thickness: 2px;
+}
+.link:focus{
+  outline: 2px solid rgba(29,155,240,.45);
+  outline-offset: 2px;
+}
+.link:active{ transform: none }
+.inline{ display:inline }
+
+/* Inline “Sign in” inside help text → small pill button + space after “?” */
+.help .link.inline{
+  margin-left: 6px;                   /* space after '?' */
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.03);
+  text-decoration: none;               /* remove underline on pill */
+  color: var(--text);
+  box-shadow: 0 1px 0 rgba(255,255,255,.04) inset;
+}
+.help .link.inline:hover{
+  background: rgba(255,255,255,.06);
+  border-color: rgba(255,255,255,.18);
+  color: var(--text);
+}
+.help .link.inline:focus{
+  outline: 2px solid rgba(29,155,240,.45);
+  outline-offset: 2px;
+}
+
+/* ===== Modal footer button refinements ===== */
+.modal .footer .btn{
+  --h: 40px;                 /* slightly shorter for dialog scale */
+  padding: 0 16px;
+  border-radius: 10px;
+}
+.modal .footer .btn-primary{
+  border-color: rgba(34,211,238,.65);
+  background: linear-gradient(to bottom, rgba(34,211,238,.38), rgba(34,211,238,.16));
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.06) inset,
+    0 8px 22px rgba(34,211,238,.18);
+}
+.modal .footer .btn-primary:hover{
+  transform: translateY(-1px);
+  background: linear-gradient(to bottom, rgba(34,211,238,.48), rgba(34,211,238,.22));
+  box-shadow:
+    0 0 0 2px rgba(34,211,238,.25),
+    0 10px 26px rgba(34,211,238,.26),
+    var(--shadow);
+}
+.modal .footer .btn-primary:active{
+  transform: translateY(0);
+  box-shadow:
+    0 4px 14px rgba(34,211,238,.18),
+    inset 0 1px 0 rgba(255,255,255,.04);
+}
+.modal .footer .btn-primary:focus{
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.modal .footer .btn-ghost{
+  border-color: rgba(255,255,255,.14);
+  background: rgba(255,255,255,0.02);
+}
+.modal .footer .btn-ghost:hover{
+  background: rgba(255,255,255,0.05);
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.08),
+    var(--shadow);
+}
+
+/* ===== HUD “Sign in” button → filled variant (header only) ===== */
+.hud .btn-ghost{
+  border-color: rgba(34,211,238,.55);
+  background: linear-gradient(to bottom, rgba(34,211,238,.32), rgba(34,211,238,.14));
+}
+.hud .btn-ghost:hover{
+  transform: translateY(-1px);
+  background: linear-gradient(to bottom, rgba(34,211,238,.44), rgba(34,211,238,.20));
+  box-shadow:
+    0 0 0 2px rgba(34,211,238,.22),
+    0 10px 26px rgba(34,211,238,.26),
+    var(--shadow);
+}
+
+/* Disabled buttons stay readable */
+.btn[disabled]{
+  opacity: .55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Why + wallet options */
+.why{ display:grid; gap:8px; margin-top:8px }
+.badge{
+  display:inline-block; padding:4px 8px; border:1px solid rgba(255,255,255,.1);
+  border-radius:999px; font-size:12px; color:var(--muted);
+}
+.wallet-options{ display:grid; gap:10px; margin-top:10px }
+.option{
+  display:flex; align-items:center; justify-content:space-between;
+  background:#0E1419; border:1px solid rgba(255,255,255,.1); border-radius:6px; padding:10px 12px;
+}
+.option-title{ display:flex; align-items:center; gap:8px; font-weight:600 }
+.terms-box{
+  height:200px; overflow:auto; padding:12px; background:#0E1419;
+  border:1px solid rgba(255,255,255,.1); border-radius:6px; color:#c6d0da;
+}
+
+/* ===== Snackbar (Starting demo…) — fixed, centered, no scroll) ===== */
+.snackbar{
+  position:fixed; left:50%; transform:translateX(-50%);
+  bottom:24px; min-width:280px; padding:12px 16px; border-radius:8px;
+  background:#10161B; border:1px solid rgba(255,255,255,.08);
+  color:var(--text); box-shadow: var(--shadow); z-index:50;
+}
+.hidden{ display:none }
